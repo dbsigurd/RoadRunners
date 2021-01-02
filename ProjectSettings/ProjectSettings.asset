@@ -598,7 +598,13 @@ PlayerSettings:
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
   cloudServicesEnabled:
+    Analytics: 1
+    Build: 0
     Collab: 1
+    Game Performance: 0
+    Purchasing: 0
+    UDP: 0
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -612,10 +618,10 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 0
-  cloudProjectId: 387e8225-5e8d-4f9f-b66c-c644a929a030
+  cloudProjectId: a2516835-fc32-411d-882c-bcd48c90ad88
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: GDHQ - Space Shooter
+  projectName: Road Runners
   organizationId: radbadger-softworks
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
