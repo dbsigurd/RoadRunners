@@ -1,37 +1,51 @@
-﻿using System.Collections;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class RunnerSensor : MonoBehaviour
 {
-    internal bool SuspendSensors;
+    [SerializeField] Transform _sensorL, _sensorR;
+    [SerializeField] ContactFilter2D _filter;
 
-    [SerializeField] internal bool
-        DetectsSurface,
-        DetectsGround,
-        DetectsEdge,
-        DetectsEdgeL,
-        DetectsEdgeR;
+    internal bool DetectsVehicle
+        => DetectLayer(29);
+    internal bool DetectsGround
+        => DetectLayer(31);
 
-    [SerializeField] SimpleSensor _sensorLeft, _sensorRight;
+    internal bool DetectsEdgeL
+        => DetectEdge(_sensorL.position, Vector2.down, 0.01f);
+    internal bool DetectsEdgeR
+        => DetectEdge(_sensorR.position, Vector2.down, 0.01f);
+    internal bool DetectsEdge 
+        => DetectsEdgeL || DetectsEdgeR;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-        => UpdateScanResults();
+    List<Collider2D> _colliders = new List<Collider2D>();
 
-    private void OnTriggerExit2D(Collider2D collision)
-        => UpdateScanResults();
 
-    private void UpdateScanResults()
+    private void OnCollisionEnter2D(Collision2D collision)
+        => _colliders.Add(collision.collider);
+
+    private void OnCollisionExit2D(Collision2D collision)
+        => _colliders.Remove(collision.collider);
+
+    private bool DetectLayer(int layer)
     {
-        if (!SuspendSensors)
-        {
-            DetectsSurface = _sensorLeft.DetectsLayer(0) || _sensorRight.DetectsLayer(0);
-            DetectsGround = _sensorLeft.DetectsLayer(31) || _sensorRight.DetectsLayer(31);
+        if (_colliders.Count == 0)
+            return false;
 
-            DetectsEdgeR = _sensorLeft.DetectsLayer(0) && !_sensorRight.DetectsLayer(0);
-            DetectsEdgeL = !_sensorLeft.DetectsLayer(0) && _sensorRight.DetectsLayer(0);
+        foreach (var collider in _colliders)
+            if (collider.gameObject.layer == layer)
+                return true;
+            else continue;
 
-            DetectsEdge = DetectsEdgeL || DetectsEdgeR;
-        }
+        return false;
+    }
+
+    private bool DetectEdge(Vector3 position, Vector2 direction, float range)
+    {
+        var hits = new RaycastHit2D[1];
+
+        Physics2D.Raycast(position, direction, _filter, hits, range);
+
+        return DetectsVehicle && hits[0].collider == null;
     }
 }

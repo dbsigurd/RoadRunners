@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class SimpleParallax : MonoBehaviour
@@ -8,11 +6,10 @@ public class SimpleParallax : MonoBehaviour
     [SerializeField] Transform _refTransform;
     Vector3 _refPositionLast;
 
-    [SerializeField] [Range(-1f, 1f)]
-    float _parallaxFactorX, _parallaxFactorY;
+    [SerializeField][Range(-1f, 1f)]
+        float _parallaxFactorX, _parallaxFactorY;
 
     [SerializeField] bool AutoSnapX, AutoSnapY;
-
     float _spriteSizeX, _spriteSizeY;
 
     private void Start()

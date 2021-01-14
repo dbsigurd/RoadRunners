@@ -1,26 +1,30 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-enum RunnerState { Idle, Running, Reaching, Jumping, Falling, Ragdoll }
+enum RunnerState { Idle, Running, Reaching, Jumping, KnockedOut, WipedOut }
 
 public class RunnerFSM : MonoBehaviour
 {
-    //[HideInInspector]
-    [SerializeField] internal RunnerState State = RunnerState.Idle;
+    RunnerState State = RunnerState.Idle;
 
-    Animator _animator;
-    PlayerInput _input;
-    SpriteRenderer _renderer;
-    RunnerSensor _sensor;
+    internal bool IsIdle        => State == RunnerState.Idle;
+    internal bool IsRunning     => State == RunnerState.Running;
+    internal bool IsReaching    => State == RunnerState.Reaching;
+    internal bool IsJumping     => State == RunnerState.Jumping;
+    internal bool IsKnockedOut  => State == RunnerState.KnockedOut;
+    internal bool IsWipedOut    => State == RunnerState.WipedOut;
+
+
+    Animator        _animator;
+    PlayerInput     _input;
+    SpriteRenderer  _renderer;
+    RunnerSensor    _sensor;
 
     private void Start()
     {
-        _animator = GetComponent<Animator>();
-        _input = GetComponent<PlayerInput>();
-        _renderer = GetComponent<SpriteRenderer>();
-        _sensor = GetComponent<RunnerSensor>();
+        _animator   = GetComponent<Animator>();
+        _input      = GetComponent<PlayerInput>();
+        _renderer   = GetComponent<SpriteRenderer>();
+        _sensor     = GetComponent<RunnerSensor>();
     }
 
     private void Update()
@@ -31,7 +35,7 @@ public class RunnerFSM : MonoBehaviour
 
     private void CheckForSpriteFlip()
     {
-        if (_input.LStickAxisX < 0)
+        if (State != RunnerState.WipedOut && _input.LStickAxisX < 0)
             _renderer.flipX = true;
         else _renderer.flipX = false;
     }
@@ -41,26 +45,23 @@ public class RunnerFSM : MonoBehaviour
         var stateLast = State;
 
         if (_sensor.DetectsGround)
-            State = RunnerState.Ragdoll;
+            State = RunnerState.WipedOut;
 
-        if (State != RunnerState.Ragdoll)
-            if (_sensor.DetectsSurface)
+        else if (!IsWipedOut)
+            if (_sensor.DetectsVehicle)
                 if (Mathf.Abs(_input.LStickAxisX) > 0.05f)
                     if (_sensor.DetectsEdge)
                         State = RunnerState.Reaching;
                     else State = RunnerState.Running;
                 else State = RunnerState.Idle;
             else State = RunnerState.Jumping;
-        else if (State == RunnerState.Ragdoll && !_sensor.DetectsGround)
-            State = RunnerState.Falling;
-        else State = RunnerState.Ragdoll;
-            
-        //if (stateLast != RunnerState.Ragdoll && State == RunnerState.Ragdoll)
-        //    StartCoroutine(GetUpAfterDelay());
+        else if (IsWipedOut && !_sensor.DetectsGround)
+            State = RunnerState.KnockedOut;
+        else State = RunnerState.WipedOut;
+
+        _animator.SetFloat("Speed", Mathf.Abs(_input.LStickAxisX));
 
         if (State != stateLast)
             _animator.SetTrigger($"{State}");
-
-        _animator.SetFloat("Speed", Mathf.Abs(_input.LStickAxisX));
     }
 }

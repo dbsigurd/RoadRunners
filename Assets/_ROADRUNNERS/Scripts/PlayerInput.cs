@@ -1,18 +1,20 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-
-internal enum InputState { Default, Pressed, Sustained, Released }
+// Full disclosure, this is a mess. Skip it. Unity's built-in Old-School input system would have been more than sufficient for the purposes of this project.
+// I pulled in this wrapper class I built in another project because it made the multiplayer feature a snap to implement,
+// it exposes extra hooks on axis that Unity does not, and it makes input calls elsewhere in the project easier to read.
+// Having recently discovered the power of Properties, I intend to turn all of the button logic into such, as soon as I figure out how to apply the same functionality to axis.
+// The excessive use of the InputState was my way of bridging the gap between my wanting a clean Inspector and my lack of Editor tools scripting.
+// It made debugging this class a breeze, but it is irredeemably unnecessary. Rest assured, I intend to learn Unity's new event-based Input System in the future, and this abomination will be a thing of the past.
 
 public class PlayerInput : MonoBehaviour
 {
-    internal enum ControllerID { Controller0, Controller1, Controller2, Controller3, Controller4}
+    internal enum InputState { Default, Pressed, Sustained, Released }
+
+    internal enum ControllerID { Controller0, Controller1, Controller2, Controller3, Controller4 }
     [SerializeField] internal ControllerID _controllerID = ControllerID.Controller0;
     ControllerID _controllerLast;
 
-    //internal enum InputState { Default, Pressed, Sustained, Released }
-
-    [HideInInspector]
     internal bool
         StartPressed, StartSustained, StartReleased,
         SelectPressed, SelectSustained, SelectReleased,
@@ -35,6 +37,7 @@ public class PlayerInput : MonoBehaviour
         EPaddlePressed, EPaddleSustained, EPaddleReleased,
         SPaddlePressed, SPaddleSustained, SPaddleReleased,
         WPaddlePressed, WPaddleSustained, WPaddleReleased;
+
 
     #region Inputs
 
@@ -147,9 +150,9 @@ public class PlayerInput : MonoBehaviour
 
         else LBumperState = InputState.Default;
 
-        LBumperPressed   = LBumperState == InputState.Pressed;
+        LBumperPressed = LBumperState == InputState.Pressed;
         LBumperSustained = LBumperState == InputState.Sustained;
-        LBumperReleased  = LBumperState == InputState.Released;
+        LBumperReleased = LBumperState == InputState.Released;
 
 
         if (Input.GetButtonDown(RBumperInput))
@@ -163,9 +166,9 @@ public class PlayerInput : MonoBehaviour
 
         else RBumperState = InputState.Default;
 
-        RBumperPressed   = RBumperState == InputState.Pressed;
+        RBumperPressed = RBumperState == InputState.Pressed;
         RBumperSustained = RBumperState == InputState.Sustained;
-        RBumperReleased  = RBumperState == InputState.Released;
+        RBumperReleased = RBumperState == InputState.Released;
 
         #endregion
 
@@ -182,9 +185,9 @@ public class PlayerInput : MonoBehaviour
 
         else LSButtonState = InputState.Default;
 
-        LSButtonPressed   = LSButtonState == InputState.Pressed;
+        LSButtonPressed = LSButtonState == InputState.Pressed;
         LSButtonSustained = LSButtonState == InputState.Sustained;
-        LSButtonReleased  = LSButtonState == InputState.Released;
+        LSButtonReleased = LSButtonState == InputState.Released;
 
         if (Input.GetButtonDown(RStickInput))
             RSButtonState = InputState.Pressed;
@@ -197,9 +200,9 @@ public class PlayerInput : MonoBehaviour
 
         else RSButtonState = InputState.Default;
 
-        RSButtonPressed   = RSButtonState == InputState.Pressed;
+        RSButtonPressed = RSButtonState == InputState.Pressed;
         RSButtonSustained = RSButtonState == InputState.Sustained;
-        RSButtonReleased  = RSButtonState == InputState.Released;
+        RSButtonReleased = RSButtonState == InputState.Released;
 
         LStickAxisX = Input.GetAxis(LStickInputX);
         LStickAxisY = Input.GetAxis(LStickInputY);
@@ -226,9 +229,9 @@ public class PlayerInput : MonoBehaviour
 
         else LTriggerState = InputState.Default;
 
-        LTriggerPressed   = LTriggerState == InputState.Pressed;
+        LTriggerPressed = LTriggerState == InputState.Pressed;
         LTriggerSustained = LTriggerState == InputState.Sustained;
-        LTriggerReleased  = LTriggerState == InputState.Released;
+        LTriggerReleased = LTriggerState == InputState.Released;
 
 
         RTriggerAxisZ = Input.GetAxis(RTriggerInput);
@@ -244,9 +247,9 @@ public class PlayerInput : MonoBehaviour
 
         else RTriggerState = InputState.Default;
 
-        RTriggerPressed   = RTriggerState == InputState.Pressed;
+        RTriggerPressed = RTriggerState == InputState.Pressed;
         RTriggerSustained = RTriggerState == InputState.Sustained;
-        RTriggerReleased  = RTriggerState == InputState.Released;
+        RTriggerReleased = RTriggerState == InputState.Released;
 
         #endregion
 
@@ -263,9 +266,9 @@ public class PlayerInput : MonoBehaviour
 
         else StartButtonState = InputState.Default;
 
-        StartPressed   = StartButtonState == InputState.Pressed;
+        StartPressed = StartButtonState == InputState.Pressed;
         StartSustained = StartButtonState == InputState.Sustained;
-        StartReleased  = StartButtonState == InputState.Released;
+        StartReleased = StartButtonState == InputState.Released;
 
 
         if (Input.GetButtonDown(SelectButtonInput))
@@ -279,9 +282,9 @@ public class PlayerInput : MonoBehaviour
 
         else SelectButtonState = InputState.Default;
 
-        SelectPressed   = SelectButtonState == InputState.Pressed;
+        SelectPressed = SelectButtonState == InputState.Pressed;
         SelectSustained = SelectButtonState == InputState.Sustained;
-        SelectReleased  = SelectButtonState == InputState.Released;
+        SelectReleased = SelectButtonState == InputState.Released;
 
 
         if (Input.GetButtonDown(AButtonInput))
@@ -295,9 +298,9 @@ public class PlayerInput : MonoBehaviour
 
         else AButtonState = InputState.Default;
 
-        AButtonPressed   = AButtonState == InputState.Pressed;
+        AButtonPressed = AButtonState == InputState.Pressed;
         AButtonSustained = AButtonState == InputState.Sustained;
-        AButtonReleased  = AButtonState == InputState.Released;
+        AButtonReleased = AButtonState == InputState.Released;
 
 
         if (Input.GetButtonDown(BButtonInput))
@@ -311,9 +314,9 @@ public class PlayerInput : MonoBehaviour
 
         else BButtonState = InputState.Default;
 
-        BButtonPressed   = BButtonState == InputState.Pressed;
+        BButtonPressed = BButtonState == InputState.Pressed;
         BButtonSustained = BButtonState == InputState.Sustained;
-        BButtonReleased  = BButtonState == InputState.Released;
+        BButtonReleased = BButtonState == InputState.Released;
 
 
         if (Input.GetButtonDown(XButtonInput))
@@ -328,9 +331,9 @@ public class PlayerInput : MonoBehaviour
         else XButtonState = InputState.Default;
 
 
-        XButtonPressed   = XButtonState == InputState.Pressed;
+        XButtonPressed = XButtonState == InputState.Pressed;
         XButtonSustained = XButtonState == InputState.Sustained;
-        XButtonReleased  = XButtonState == InputState.Released;
+        XButtonReleased = XButtonState == InputState.Released;
 
         if (Input.GetButtonDown(YButtonInput))
             YButtonState = InputState.Pressed;
@@ -343,9 +346,9 @@ public class PlayerInput : MonoBehaviour
 
         else YButtonState = InputState.Default;
 
-        YButtonPressed   = YButtonState == InputState.Pressed;
+        YButtonPressed = YButtonState == InputState.Pressed;
         YButtonSustained = YButtonState == InputState.Sustained;
-        YButtonReleased  = YButtonState == InputState.Released;
+        YButtonReleased = YButtonState == InputState.Released;
 
         #endregion
 
@@ -451,10 +454,10 @@ public class PlayerInput : MonoBehaviour
         LBumperInput = $"Gamepad({(int)_controllerID}).LBumper";
         RBumperInput = $"Gamepad({(int)_controllerID}).RBumper";
 
-        LStickInput  = $"Gamepad({(int)_controllerID}).LStick";
+        LStickInput = $"Gamepad({(int)_controllerID}).LStick";
         LStickInputX = $"Gamepad({(int)_controllerID}).LStick.x";
         LStickInputY = $"Gamepad({(int)_controllerID}).LStick.y";
-        RStickInput  = $"Gamepad({(int)_controllerID}).RStick";
+        RStickInput = $"Gamepad({(int)_controllerID}).RStick";
         RStickInputX = $"Gamepad({(int)_controllerID}).RStick.x";
         RStickInputY = $"Gamepad({(int)_controllerID}).RStick.y";
 

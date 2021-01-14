@@ -4,53 +4,73 @@ using UnityEngine;
 
 public class LaneSpawner : MonoBehaviour
 {
-    [SerializeField] Transform WestSpawnPoint, EastSpawnPoint;
-
-    [SerializeField] float _spawnIntervalMin, _spawnIntervalMax;
-
-    [SerializeField] int _vehiclesInLaneMax;
+    //SpawnPoints follow the player via SimpleFollow
+    [SerializeField] internal Transform WestSpawnPoint, EastSpawnPoint, Parkade;
 
     [SerializeField] List<VehicleBehaviour> CarPool = new List<VehicleBehaviour>();
+    [SerializeField] float _spawnIntervalMin, _spawnIntervalMax;
+    [SerializeField] int _vehiclesInLaneMax;
+    [SerializeField] ContactFilter2D _scanFilter;
 
-    int _vehiclesDispatched;
-    int _startingVehicleCount;
+    bool _spawnToggle;
+    int _startingPoolCount;
 
     private void Start()
     {
         foreach (var vehicle in CarPool)
-            vehicle._parentLane = this;
+        {
+            vehicle.ParentLane = this;
+            vehicle.transform.position = Parkade.position;
+        }
+        _startingPoolCount = CarPool.Count;
 
-        _startingVehicleCount = CarPool.Count;
-
-        StartCoroutine(DispatchVehicles());
+        StartCoroutine(DispatchRoutine());
     }
 
-    private IEnumerator DispatchVehicles()
+    private IEnumerator DispatchRoutine()
     {
+        var dispatchInterval = 0.25f;
+
+        yield return new WaitForSeconds(Random.Range(0, dispatchInterval));
+
         while (true)
         {
-            if (_startingVehicleCount - CarPool.Count < _vehiclesInLaneMax)
+            if (_startingPoolCount - CarPool.Count < _vehiclesInLaneMax)
             {
-                var vehicle = CarPool[Random.Range(1, CarPool.Count-1)];
+                var vehicle = CarPool[Random.Range(1, CarPool.Count - 1)];
 
-                if (_vehiclesDispatched % 2 == 0)
-                    vehicle.transform.position = EastSpawnPoint.position;
-                else vehicle.transform.position = WestSpawnPoint.position;
-
-                vehicle.gameObject.SetActive(true);
-                CarPool.Remove(vehicle);
-
-                _vehiclesDispatched++;
-
-                yield return new WaitForSeconds
-                    (Random.Range(_spawnIntervalMin, _spawnIntervalMax) * 0.5f);
+                if (_spawnToggle)
+                {
+                    if (CheckForCongestionAtSpawn(EastSpawnPoint.position))
+                        DispatchVehicle(vehicle, EastSpawnPoint.position);
+                }
+                else if (CheckForCongestionAtSpawn(WestSpawnPoint.position))
+                    DispatchVehicle(vehicle, WestSpawnPoint.position);
             }
-            else yield return null;
+            _spawnToggle = !_spawnToggle;
+
+            yield return new WaitForSeconds(dispatchInterval);
         }
+    }
+
+    private bool CheckForCongestionAtSpawn(Vector3 spawnPoint)
+    {
+        var trafficScanner = new RaycastHit2D[1];
+
+        return Physics2D.Raycast(spawnPoint + new Vector3(0f, 10f, 0f), Vector2.left, _scanFilter, trafficScanner, 2.5f) == 0
+            && Physics2D.Raycast(spawnPoint + new Vector3(0f, 10f, 0f), Vector2.right, _scanFilter, trafficScanner, 2.5f) == 0;
+    }
+
+    private void DispatchVehicle(VehicleBehaviour vehicle, Vector3 spawnPoint)
+    {
+        vehicle.transform.position = spawnPoint;
+        vehicle.gameObject.SetActive(true);
+        CarPool.Remove(vehicle);
     }
 
     internal void RecallVehicle(VehicleBehaviour vehicle)
     {
         CarPool.Add(vehicle);
+        vehicle.transform.position = Parkade.position;
     }
 }

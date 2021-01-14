@@ -1,14 +1,23 @@
 ﻿using UnityEngine;
 
+//TODO: Implement boolean condition for overrides
+
 public class SimpleFollow : MonoBehaviour
 {
     [SerializeField]
     Transform _target;
 
     [SerializeField]
-    Vector3
-        _override,
-        _offset;
+    bool
+        _overrideX,
+        _overrideY,
+        _overrideZ;
+
+    [SerializeField] [Tooltip("Will lock checked axis to these values.")]
+    Vector3 _override;
+
+    [SerializeField] [Tooltip("Adds these values to Target position/overrides")]
+    Vector3 _offset;
 
     private void LateUpdate()
         => UpdatePosition();
@@ -20,13 +29,13 @@ public class SimpleFollow : MonoBehaviour
     {
         float x, y, z;
 
-        if (_override.x != 0) x = _override.x;
+        if (_overrideX) x = _override.x;
         else x = _target.position.x;
 
-        if (_override.y != 0) y = _override.y;
+        if (_overrideY) y = _override.y;
         else y = _target.position.y;
 
-        if (_override.z != 0) z = _override.z;
+        if (_overrideZ) z = _override.z;
         else z = _target.position.z;
 
         transform.position
