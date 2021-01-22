@@ -1,7 +1,7 @@
 using UnityEngine;
 
-//TODO: In the unlikely event that both players trigger a vehicle explosion almost simultaneously, only one animation will fire, because only one exists.
-// Consider switching to a non-static pool of explosions. The alternative is each vehicle gets and fires their own explosion, but that seems a little overkill.
+//TODO:  In the unlikely event that both players trigger a vehicle explosion almost simultaneously, only one animation will fire, because only one exists.
+// Consider switching to a non-static pool of explosions. The alternative is each vehicle gets and fires their own explosion, but that seems a little overkill. 
 
 public class AngerManagement : MonoBehaviour
 {
